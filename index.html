@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#080d16">
+<title>VEXON VPN</title>
+
+<style>
+:root {
+  --bg: #080d16;
+  --panel: #101a29;
+  --cyan: #49e6e0;
+  --blue: #5b8cff;
+  --text: #f2f6ff;
+  --muted: #8290a6;
+  --border: rgba(255,255,255,.08);
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Tahoma, Arial, sans-serif;
+}
+
+body {
+  min-height: 100dvh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background:
+    radial-gradient(ellipse at 50% 35%, rgba(37,91,132,.19), transparent 48%),
+    var(--bg);
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.app {
+  width: min(100%, 480px);
+  height: 100%;
+  height: 100dvh;
+  max-height: 950px;
+  padding:
+    max(18px, env(safe-area-inset-top))
+    22px
+    max(12px, env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+header {
+  height: 56px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  direction: ltr;
+}
+
+.logo {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(145deg, #43e5df, #4778ff);
+  color: #07111b;
+  font-size: 21px;
+  font-weight: 900;
+  box-shadow: 0 0 24px rgba(73,230,224,.12);
+}
+
+.brand-name {
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+
+.brand-sub {
+  color: var(--muted);
+  font-size: 10px;
+  margin-top: 3px;
+  letter-spacing: 3px;
+}
+
+.icon-button {
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: rgba(255,255,255,.035);
+  display: grid;
+  place-items: center;
+  font-size: 19px;
+}
+
+.status {
+  margin-top: 12px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.status-label {
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: .4px;
+}
+
+.status-title {
+  margin-top: 9px;
+  font-size: clamp(21px, 6vw, 27px);
+  font-weight: 800;
+}
+
+.status-description {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.connection-area {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 0;
+}
+
+.orbit {
+  width: min(62vw, 246px);
+  aspect-ratio: 1;
+  max-height: 31vh;
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+.ring {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(73,230,224,.13);
+  border-radius: 50%;
+}
+
+.ring::after {
+  content: "";
+  position: absolute;
+  inset: 15px;
+  border: 1px solid rgba(91,140,255,.2);
+  border-radius: 50%;
+}
+
+.ring-two {
+  inset: 27px;
+  border-color: rgba(73,230,224,.24);
+}
+
+.ring-three {
+  inset: 46px;
+  border-style: dashed;
+  border-color: rgba(91,140,255,.24);
+}
+
+.connect-button {
+  position: relative;
+  width: 53%;
+  aspect-ratio: 1;
+  border: 1px solid rgba(73,230,224,.6);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 25%, #183f4b, #102432 55%, #0b1522);
+  box-shadow:
+    0 0 0 8px rgba(73,230,224,.035),
+    0 0 45px rgba(73,230,224,.11),
+    inset 0 0 25px rgba(73,230,224,.08);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  transition: transform .25s, box-shadow .3s;
+}
+
+.connect-button:active {
+  transform: scale(.94);
+}
+
+.power-icon {
+  font-size: clamp(28px, 8vw, 39px);
+  color: var(--cyan);
+  line-height: 1;
+}
+
+.connect-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  direction: ltr;
+}
+
+.orbit.connected .connect-button {
+  border-color: #5b8cff;
+  box-shadow:
+    0 0 0 9px rgba(91,140,255,.06),
+    0 0 48px rgba(91,140,255,.2);
+}
+
+.orbit.connected .power-icon {
+  color: #8db1ff;
+}
+
+.orbit.connecting .ring-three {
+  animation: rotate 3s linear infinite;
+}
+
+.orbit.connecting .connect-button {
+  animation: jump 1s ease-in-out infinite;
+}
+
+.orbit.connected .ring-two {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes rotate {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes jump {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: .55; }
+  50% { opacity: 1; }
+}
+
+.metrics {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+  direction: rtl;
+}
+
+.metric {
+  min-width: 100px;
+  text-align: center;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: rgba(255,255,255,.025);
+}
+
+.metric-label {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.metric-value {
+  margin-top: 7px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.server-card {
+  width: 100%;
+  flex-shrink: 0;
+  padding: 15px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: linear-gradient(120deg, rgba(20,35,53,.92), rgba(14,23,37,.92));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.server-info {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+}
+
+.server-icon {
+  width: 43px;
+  height: 43px;
+  flex-shrink: 0;
+  border-radius: 13px;
+  display: grid;
+  place-items: center;
+  background: rgba(73,230,224,.09);
+  font-size: 21px;
+}
+
+.server-name {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.server-detail {
+  margin-top: 6px;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.server-action {
+  border: 0;
+  background: transparent;
+  color: var(--cyan);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.bottom-nav {
+  margin-top: 12px;
+  flex-shrink: 0;
+  height: 61px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid var(--border);
+}
+
+.nav-item {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-size: 10px;
+}
+
+.nav-item span:first-child {
+  font-size: 19px;
+}
+
+.nav-item.active {
+  color: var(--cyan);
+}
+
+.notice {
+  position: fixed;
+  bottom: max(82px, calc(env(safe-area-inset-bottom) + 70px));
+  left: 50%;
+  transform: translate(-50%, 12px);
+  background: #18283a;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 12px;
+  opacity: 0;
+  pointer-events: none;
+  transition: .25s;
+  width: max-content;
+  max-width: 85%;
+  text-align: center;
+  z-index: 5;
+}
+
+.notice.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+@media (max-height: 650px) {
+  .app { padding-top: max(8px, env(safe-area-inset-top)); }
+  header { height: 44px; }
+  .logo { width: 32px; height: 32px; }
+  .status { margin-top: 4px; }
+  .status-title { margin-top: 5px; font-size: 20px; }
+  .status-description { margin-top: 4px; }
+  .orbit { width: min(48vw, 180px); max-height: 25vh; }
+  .metrics { margin-top: 7px; }
+  .metric { padding: 7px 12px; }
+  .server-card { padding: 10px; }
+  .server-icon { width: 36px; height: 36px; }
+  .bottom-nav { height: 49px; margin-top: 7px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}
+</style>
+</head>
+
+<body>
+<main class="app">
+  <header>
+    <div class="brand">
+      <div class="logo">V</div>
+      <div>
+        <div class="brand-name">VEXON</div>
+        <div class="brand-sub">PRIVATE NETWORK</div>
+      </div>
+    </div>
+    <button class="icon-button" id="settings" aria-label="تنظیمات">⚙</button>
+  </header>
+
+  <section class="status">
+    <div class="status-label">وضعیت شبکه خصوصی</div>
+    <div class="status-title" id="statusTitle">آماده اتصال</div>
+    <div class="status-description" id="statusDescription">
+      برای شروع، دکمه اتصال را لمس کنید
+    </div>
+  </section>
+
+  <section class="connection-area">
+    <div class="orbit" id="orbit">
+      <div class="ring"></div>
+      <div class="ring ring-two"></div>
+      <div class="ring ring-three"></div>
+
+      <button class="connect-button" id="connectButton" aria-label="اتصال به VPN">
+        <span class="power-icon">⏻</span>
+        <span class="connect-label" id="connectLabel">CONNECT</span>
+      </button>
+    </div>
+
+    <div class="metrics">
+      <div class="metric">
+        <div class="metric-label">تأخیر سرور</div>
+        <div class="metric-value" id="latency">— ms</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">مدت اتصال</div>
+        <div class="metric-value" id="duration">00:00:00</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="server-card">
+    <div class="server-info">
+      <div class="server-icon">◎</div>
+      <div>
+        <div class="server-name" id="serverName">انتخاب سرور</div>
+        <div class="server-detail" id="serverDetail">هنوز سروری انتخاب نشده</div>
+      </div>
+    </div>
+    <button class="server-action" id="chooseServer">انتخاب ←</button>
+  </section>
+
+  <nav class="bottom-nav">
+    <button class="nav-item active" data-page="home">
+      <span>⌂</span><span>خانه</span>
+    </button>
+    <button class="nav-item" data-page="servers">
+      <span>◎</span><span>سرورها</span>
+    </button>
+    <button class="nav-item" data-page="config">
+      <span>＋</span><span>کانفیگ من</span>
+    </button>
+  </nav>
+</main>
+
+<div class="notice" id="notice" role="status"></div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+
+  const orbit = $("orbit");
+  const connectButton = $("connectButton");
+  const connectLabel = $("connectLabel");
+  const statusTitle = $("statusTitle");
+  const statusDescription = $("statusDescription");
+  const notice = $("notice");
+
+  let state = "disconnected";
+  let startedAt = 0;
+  let timer = null;
+  let noticeTimer = null;
+
+  function showNotice(message) {
+    notice.textContent = message;
+    notice.classList.add("show");
+    clearTimeout(noticeTimer);
+    noticeTimer = setTimeout(() => notice.classList.remove("show"), 2600);
+  }
+
+  function setState(next) {
+    state = next;
+    orbit.classList.remove("connecting", "connected");
+
+    if (next === "connecting") {
+      orbit.classList.add("connecting");
+      statusTitle.textContent = "در حال اتصال";
+      statusDescription.textContent = "در حال بررسی اتصال...";
+      connectLabel.textContent = "CONNECTING";
+    } else if (next === "connected") {
+      orbit.classList.add("connected");
+      statusTitle.textContent = "متصل";
+      statusDescription.textContent = "وضعیت واقعی سرور هنوز تأیید نشده است";
+      connectLabel.textContent = "CONNECTED";
+    } else {
+      statusTitle.textContent = "آماده اتصال";
+      statusDescription.textContent = "برای اتصال واقعی، ابتدا کانفیگ اضافه کنید";
+      connectLabel.textContent = "CONNECT";
+      $("duration").textContent = "00:00:00";
+    }
+  }
+
+  connectButton.addEventListener("click", () => {
+    if (state === "connecting") {
+      clearTimeout(timer);
+      setState("disconnected");
+      showNotice("عملیات نمایشی لغو شد");
+      return;
+    }
+
+    if (state === "connected") {
+      setState("disconnected");
+      clearInterval(timer);
+      showNotice("این نمونه فقط رابط کاربری است؛ VPN قطع نشده است");
+      return;
+    }
+
+    setState("connecting");
+    showNotice("اتصال واقعی هنوز پیاده‌سازی نشده است");
+
+    timer = setTimeout(() => {
+      setState("disconnected");
+      showNotice("برای اتصال، اپلیکیشن بومی و سرور VPN لازم است");
+    }, 1800);
+  });
+
+  $("chooseServer").addEventListener("click", () => {
+    showNotice("انتخاب سرور پس از اتصال به زیرساخت فعال می‌شود");
+  });
+
+  $("settings").addEventListener("click", () => {
+    showNotice("تنظیمات در مرحله بعد اضافه می‌شود");
+  });
+
+  document.querySelectorAll(".nav-item").forEach(button => {
+    button.addEventListener("click", () => {
+      const page = button.dataset.page;
+
+      document.querySelectorAll(".nav-item").forEach(item => {
+        item.classList.toggle("active", item === button);
+      });
+
+      if (page === "home") {
+        showNotice("صفحه اصلی");
+      } else if (page === "servers") {
+        showNotice("فهرست سرورها پس از راه‌اندازی سرور مدیریت اضافه می‌شود");
+      } else {
+        showNotice("افزودن کانفیگ پس از پیاده‌سازی هسته VPN فعال می‌شود");
+      }
+    });
+  });
+})();
+</script>
+</body>
+  </html>
