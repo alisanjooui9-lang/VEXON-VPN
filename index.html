@@ -1,582 +1,759 @@
-<!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<!DOCTYPE html><html lang="fa" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#080d16">
-<title>VEXON VPN</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#080D18">
+  <meta name="description" content="VEXON VPN — رابط مدیریت اتصال و سرورها">
+  <title>VEXON VPN</title>  <style>
+    :root {
+      --bg: #080D18;
+      --panel: #111A2A;
+      --panel2: #162238;
+      --blue: #20C8F5;
+      --blue2: #477BFF;
+      --text: #F4F7FF;
+      --muted: #8E9BB2;
+      --green: #28D99A;
+      --border: rgba(255,255,255,.08);
+    }
 
-<style>
-:root {
-  --bg: #080d16;
-  --panel: #101a29;
-  --cyan: #49e6e0;
-  --blue: #5b8cff;
-  --text: #f2f6ff;
-  --muted: #8290a6;
-  --border: rgba(255,255,255,.08);
-}
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-* {
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
-}
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Tahoma, Arial, sans-serif;
+    }
 
-html, body {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  overflow: hidden;
-  background: var(--bg);
-  color: var(--text);
-  font-family: Tahoma, Arial, sans-serif;
-}
+    body {
+      min-height: 100dvh;
+      padding:
+        env(safe-area-inset-top)
+        16px
+        env(safe-area-inset-bottom);
+    }
 
-body {
-  min-height: 100dvh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background:
-    radial-gradient(ellipse at 50% 35%, rgba(37,91,132,.19), transparent 48%),
-    var(--bg);
-}
+    button, input {
+      font: inherit;
+    }
 
-button {
-  font: inherit;
-  color: inherit;
-  cursor: pointer;
-}
+    button {
+      color: inherit;
+      cursor: pointer;
+    }
 
-.app {
-  width: min(100%, 480px);
-  height: 100%;
-  height: 100dvh;
-  max-height: 950px;
-  padding:
-    max(18px, env(safe-area-inset-top))
-    22px
-    max(12px, env(safe-area-inset-bottom));
-  display: flex;
-  flex-direction: column;
-  position: relative;
-}
+    .app {
+      width: 100%;
+      max-width: 460px;
+      height: 100%;
+      min-height: 0;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+    }
 
-header {
-  height: 56px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
+    header {
+      height: 72px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
 
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  direction: ltr;
-}
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+    }
 
-.logo {
-  width: 38px;
-  height: 38px;
-  border-radius: 12px;
-  display: grid;
-  place-items: center;
-  background: linear-gradient(145deg, #43e5df, #4778ff);
-  color: #07111b;
-  font-size: 21px;
-  font-weight: 900;
-  box-shadow: 0 0 24px rgba(73,230,224,.12);
-}
+    .logo {
+      width: 43px;
+      height: 43px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: linear-gradient(145deg, var(--blue), var(--blue2));
+      color: #06101C;
+      font-weight: 900;
+      font-size: 20px;
+      box-shadow: 0 0 25px #20c8f52b;
+    }
 
-.brand-name {
-  font-size: 20px;
-  font-weight: 900;
-  letter-spacing: 2px;
-}
+    .brand-name {
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+    }
 
-.brand-sub {
-  color: var(--muted);
-  font-size: 10px;
-  margin-top: 3px;
-  letter-spacing: 3px;
-}
+    .brand-sub {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 10px;
+    }
 
-.icon-button {
-  width: 42px;
-  height: 42px;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  background: rgba(255,255,255,.035);
-  display: grid;
-  place-items: center;
-  font-size: 19px;
-}
+    .version {
+      padding: 7px 10px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      color: var(--muted);
+      font-size: 10px;
+    }
 
-.status {
-  margin-top: 12px;
-  text-align: center;
-  flex-shrink: 0;
-}
+    .connection-card {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      background:
+        radial-gradient(ellipse at 50% 35%, #18385a55, transparent 60%),
+        var(--panel);
+      padding: 16px;
+      position: relative;
+      overflow: hidden;
+    }
 
-.status-label {
-  font-size: 12px;
-  color: var(--muted);
-  letter-spacing: .4px;
-}
+    .connection-card::before {
+      content: "";
+      position: absolute;
+      width: 230px;
+      height: 230px;
+      border-radius: 50%;
+      border: 1px solid #20c8f510;
+      pointer-events: none;
+    }
 
-.status-title {
-  margin-top: 9px;
-  font-size: clamp(21px, 6vw, 27px);
-  font-weight: 800;
-}
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 13px;
+      border: 1px solid var(--border);
+      border-radius: 30px;
+      background: #080d1888;
+      color: var(--muted);
+      font-size: 11px;
+      z-index: 1;
+    }
 
-.status-description {
-  margin-top: 8px;
-  color: var(--muted);
-  font-size: 12px;
-}
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #77849A;
+    }
 
-.connection-area {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 12px 0;
-}
+    .status-pill.connected {
+      color: var(--green);
+    }
 
-.orbit {
-  width: min(62vw, 246px);
-  aspect-ratio: 1;
-  max-height: 31vh;
-  position: relative;
-  display: grid;
-  place-items: center;
-}
+    .status-pill.connected .status-dot {
+      background: var(--green);
+      box-shadow: 0 0 12px var(--green);
+    }
 
-.ring {
-  position: absolute;
-  inset: 0;
-  border: 1px solid rgba(73,230,224,.13);
-  border-radius: 50%;
-}
+    .connect-area {
+      width: min(65vw, 245px);
+      max-width: 245px;
+      aspect-ratio: 1;
+      position: relative;
+      display: grid;
+      place-items: center;
+      margin: 18px 0;
+      z-index: 1;
+    }
 
-.ring::after {
-  content: "";
-  position: absolute;
-  inset: 15px;
-  border: 1px solid rgba(91,140,255,.2);
-  border-radius: 50%;
-}
+    .ring {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 1px solid #20c8f52b;
+      transition: .3s;
+    }
 
-.ring-two {
-  inset: 27px;
-  border-color: rgba(73,230,224,.24);
-}
+    .ring.r2 {
+      inset: 14px;
+      border-color: #477bff35;
+    }
 
-.ring-three {
-  inset: 46px;
-  border-style: dashed;
-  border-color: rgba(91,140,255,.24);
-}
+    .ring.r3 {
+      inset: 29px;
+      border-style: dashed;
+      border-color: #20c8f53b;
+    }
 
-.connect-button {
-  position: relative;
-  width: 53%;
-  aspect-ratio: 1;
-  border: 1px solid rgba(73,230,224,.6);
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at 35% 25%, #183f4b, #102432 55%, #0b1522);
-  box-shadow:
-    0 0 0 8px rgba(73,230,224,.035),
-    0 0 45px rgba(73,230,224,.11),
-    inset 0 0 25px rgba(73,230,224,.08);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  transition: transform .25s, box-shadow .3s;
-}
+    .connect-area.busy .ring.r1 {
+      animation: pulse 1.5s infinite;
+    }
 
-.connect-button:active {
-  transform: scale(.94);
-}
+    .connect-area.busy .ring.r2 {
+      animation: pulse 1.5s .3s infinite;
+    }
 
-.power-icon {
-  font-size: clamp(28px, 8vw, 39px);
-  color: var(--cyan);
-  line-height: 1;
-}
+    .connect-area.busy .ring.r3 {
+      animation: rotate 8s linear infinite;
+    }
 
-.connect-label {
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 1.5px;
-  direction: ltr;
-}
+    .connect-button {
+      width: 58%;
+      aspect-ratio: 1;
+      border: 1px solid #54dcff8a;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #1b4362, #10233f 75%);
+      box-shadow:
+        inset 0 0 25px #20c8f520,
+        0 0 35px #20c8f51a;
+      display: grid;
+      place-items: center;
+      transition: transform .2s, box-shadow .2s;
+    }
 
-.orbit.connected .connect-button {
-  border-color: #5b8cff;
-  box-shadow:
-    0 0 0 9px rgba(91,140,255,.06),
-    0 0 48px rgba(91,140,255,.2);
-}
+    .connect-button:active {
+      transform: scale(.95);
+    }
 
-.orbit.connected .power-icon {
-  color: #8db1ff;
-}
+    .power-icon {
+      width: 44px;
+      height: 44px;
+      fill: none;
+      stroke: var(--blue);
+      stroke-width: 2.6;
+      stroke-linecap: round;
+    }
 
-.orbit.connecting .ring-three {
-  animation: rotate 3s linear infinite;
-}
+    .connect-title {
+      font-size: 19px;
+      font-weight: bold;
+      z-index: 1;
+    }
 
-.orbit.connecting .connect-button {
-  animation: jump 1s ease-in-out infinite;
-}
+    .connect-desc {
+      margin-top: 9px;
+      max-width: 290px;
+      color: var(--muted);
+      font-size: 11px;
+      text-align: center;
+      line-height: 1.9;
+      z-index: 1;
+    }
 
-.orbit.connected .ring-two {
-  animation: pulse 2s ease-in-out infinite;
-}
+    .jump {
+      animation: jump .45s ease;
+    }
 
-@keyframes rotate {
-  to { transform: rotate(360deg); }
-}
+    .server-card {
+      flex-shrink: 0;
+      margin-top: 12px;
+      padding: 15px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: var(--panel);
+    }
 
-@keyframes jump {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-7px); }
-}
+    .server-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
 
-@keyframes pulse {
-  0%, 100% { opacity: .55; }
-  50% { opacity: 1; }
-}
+    .server-heading strong {
+      font-size: 13px;
+    }
 
-.metrics {
-  display: flex;
-  gap: 12px;
-  margin-top: 16px;
-  direction: rtl;
-}
+    .server-heading span {
+      color: var(--muted);
+      font-size: 10px;
+    }
 
-.metric {
-  min-width: 100px;
-  text-align: center;
-  padding: 10px 14px;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  background: rgba(255,255,255,.025);
-}
+    .server-select {
+      width: 100%;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      text-align: right;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--panel2);
+    }
 
-.metric-label {
-  color: var(--muted);
-  font-size: 10px;
-}
+    .server-icon {
+      width: 40px;
+      height: 40px;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      background: #20c8f514;
+      font-size: 20px;
+    }
 
-.metric-value {
-  margin-top: 7px;
-  font-size: 14px;
-  font-weight: 700;
-}
+    .server-info {
+      flex: 1;
+      min-width: 0;
+    }
 
-.server-card {
-  width: 100%;
-  flex-shrink: 0;
-  padding: 15px;
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  background: linear-gradient(120deg, rgba(20,35,53,.92), rgba(14,23,37,.92));
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
+    .server-name {
+      font-size: 12px;
+      font-weight: bold;
+    }
 
-.server-info {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-  min-width: 0;
-}
+    .server-detail {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 10px;
+    }
 
-.server-icon {
-  width: 43px;
-  height: 43px;
-  flex-shrink: 0;
-  border-radius: 13px;
-  display: grid;
-  place-items: center;
-  background: rgba(73,230,224,.09);
-  font-size: 21px;
-}
+    .server-arrow {
+      color: var(--muted);
+      font-size: 18px;
+    }
 
-.server-name {
-  font-size: 13px;
-  font-weight: 700;
-}
+    .tools {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+      flex-shrink: 0;
+    }
 
-.server-detail {
-  margin-top: 6px;
-  font-size: 10px;
-  color: var(--muted);
-}
+    .tool-button {
+      min-height: 43px;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: #111A2A;
+      font-size: 11px;
+    }
 
-.server-action {
-  border: 0;
-  background: transparent;
-  color: var(--cyan);
-  font-size: 11px;
-  white-space: nowrap;
-}
+    .tool-button:active {
+      background: #1a2b43;
+    }
 
-.bottom-nav {
-  margin-top: 12px;
-  flex-shrink: 0;
-  height: 61px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  border-top: 1px solid var(--border);
-}
+    .bottom-nav {
+      height: 64px;
+      flex-shrink: 0;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      align-items: center;
+      margin-top: 8px;
+    }
 
-.nav-item {
-  border: 0;
-  background: transparent;
-  color: var(--muted);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  font-size: 10px;
-}
+    .nav-button {
+      height: 48px;
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      font-size: 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+    }
 
-.nav-item span:first-child {
-  font-size: 19px;
-}
+    .nav-button b {
+      font-size: 18px;
+      font-weight: normal;
+    }
 
-.nav-item.active {
-  color: var(--cyan);
-}
+    .nav-button.active {
+      color: var(--blue);
+    }
 
-.notice {
-  position: fixed;
-  bottom: max(82px, calc(env(safe-area-inset-bottom) + 70px));
-  left: 50%;
-  transform: translate(-50%, 12px);
-  background: #18283a;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 12px 16px;
-  font-size: 12px;
-  opacity: 0;
-  pointer-events: none;
-  transition: .25s;
-  width: max-content;
-  max-width: 85%;
-  text-align: center;
-  z-index: 5;
-}
+    .overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      background: #0009;
+      padding: 12px;
+      padding-bottom: max(12px, env(safe-area-inset-bottom));
+    }
 
-.notice.show {
-  opacity: 1;
-  transform: translate(-50%, 0);
-}
+    .overlay.open {
+      display: flex;
+    }
 
-@media (max-height: 650px) {
-  .app { padding-top: max(8px, env(safe-area-inset-top)); }
-  header { height: 44px; }
-  .logo { width: 32px; height: 32px; }
-  .status { margin-top: 4px; }
-  .status-title { margin-top: 5px; font-size: 20px; }
-  .status-description { margin-top: 4px; }
-  .orbit { width: min(48vw, 180px); max-height: 25vh; }
-  .metrics { margin-top: 7px; }
-  .metric { padding: 7px 12px; }
-  .server-card { padding: 10px; }
-  .server-icon { width: 36px; height: 36px; }
-  .bottom-nav { height: 49px; margin-top: 7px; }
-}
+    .sheet {
+      width: 100%;
+      max-width: 460px;
+      max-height: 75dvh;
+      overflow-y: auto;
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      background: #101a2b;
+    }
 
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: .01ms !important;
-    transition-duration: .01ms !important;
-  }
-}
-</style>
-</head>
+    .sheet-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
 
-<body>
-<main class="app">
-  <header>
-    <div class="brand">
-      <div class="logo">V</div>
-      <div>
-        <div class="brand-name">VEXON</div>
-        <div class="brand-sub">PRIVATE NETWORK</div>
+    .sheet-head h2 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .close-button {
+      width: 35px;
+      height: 35px;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      background: #1b2940;
+    }
+
+    .server-option {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 9px;
+      padding: 14px;
+      text-align: right;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #152239;
+    }
+
+    .server-option:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
+    .server-option small {
+      display: block;
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .sheet-note {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 2;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: .7; }
+      50% { transform: scale(1.07); opacity: 1; }
+    }
+
+    @keyframes rotate {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes jump {
+      0%, 100% { transform: translateY(0); }
+      45% { transform: translateY(-8px); }
+    }
+
+    @media (max-height: 700px) {
+      header { height: 58px; }
+      .logo { width: 36px; height: 36px; }
+      .connect-area { width: min(43vh, 190px); margin: 10px 0; }
+      .connection-card { padding: 10px; }
+      .connect-desc { margin-top: 6px; font-size: 10px; }
+      .server-card { padding: 10px; margin-top: 8px; }
+      .server-icon { width: 34px; height: 34px; }
+      .tools { margin-top: 7px; }
+      .bottom-nav { height: 52px; }
+    }
+
+    @media (max-height: 570px) {
+      .connect-area { width: 125px; margin: 6px 0; }
+      .connect-desc { display: none; }
+      .server-card { padding: 8px; }
+      .server-heading { margin-bottom: 6px; }
+      .server-select { padding: 7px; }
+      .tool-button { min-height: 35px; }
+      .bottom-nav { height: 42px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style></head><body>
+  <main class="app">
+    <header>
+      <div class="brand">
+        <div class="logo">V</div>
+        <div>
+          <div class="brand-name">VEXON</div>
+          <div class="brand-sub">PRIVATE CONNECTION</div>
+        </div>
       </div>
-    </div>
-    <button class="icon-button" id="settings" aria-label="تنظیمات">⚙</button>
-  </header>
+      <div class="version" id="version">نسخه 0.1.0</div>
+    </header><section class="connection-card">
+  <div class="status-pill" id="status-pill">
+    <span class="status-dot"></span>
+    <span id="connection-status">متصل نیست</span>
+  </div>
 
-  <section class="status">
-    <div class="status-label">وضعیت شبکه خصوصی</div>
-    <div class="status-title" id="statusTitle">آماده اتصال</div>
-    <div class="status-description" id="statusDescription">
-      برای شروع، دکمه اتصال را لمس کنید
-    </div>
-  </section>
+  <div class="connect-area" id="connect-area">
+    <div class="ring r1"></div>
+    <div class="ring r2"></div>
+    <div class="ring r3"></div>
 
-  <section class="connection-area">
-    <div class="orbit" id="orbit">
-      <div class="ring"></div>
-      <div class="ring ring-two"></div>
-      <div class="ring ring-three"></div>
+    <button
+      class="connect-button"
+      id="connect-btn"
+      type="button"
+      aria-label="شروع اتصال"
+    >
+      <svg class="power-icon" viewBox="0 0 48 48" aria-hidden="true">
+        <path d="M24 5v20"></path>
+        <path d="M13 12a18 18 0 1 0 22 0"></path>
+      </svg>
+    </button>
+  </div>
 
-      <button class="connect-button" id="connectButton" aria-label="اتصال به VPN">
-        <span class="power-icon">⏻</span>
-        <span class="connect-label" id="connectLabel">CONNECT</span>
-      </button>
-    </div>
+  <div class="connect-title" id="connect-title">اتصال امن</div>
+  <div class="connect-desc" id="connect-desc">
+    سرور را انتخاب کن. اتصال واقعی پس از راه‌اندازی زیرساخت فعال می‌شود.
+  </div>
+</section>
 
-    <div class="metrics">
-      <div class="metric">
-        <div class="metric-label">تأخیر سرور</div>
-        <div class="metric-value" id="latency">— ms</div>
-      </div>
-      <div class="metric">
-        <div class="metric-label">مدت اتصال</div>
-        <div class="metric-value" id="duration">00:00:00</div>
-      </div>
-    </div>
-  </section>
+<section class="server-card">
+  <div class="server-heading">
+    <strong>سرور انتخابی</strong>
+    <span id="server-count">۰ سرور آماده</span>
+  </div>
 
-  <section class="server-card">
+  <button class="server-select" id="choose-server-btn" type="button">
+    <div class="server-icon">◈</div>
     <div class="server-info">
-      <div class="server-icon">◎</div>
-      <div>
-        <div class="server-name" id="serverName">انتخاب سرور</div>
-        <div class="server-detail" id="serverDetail">هنوز سروری انتخاب نشده</div>
+      <div class="server-name" id="selected-server-name">سروری انتخاب نشده</div>
+      <div class="server-detail" id="selected-server-detail">
+        ابتدا سرور را پیکربندی کنید
       </div>
     </div>
-    <button class="server-action" id="chooseServer">انتخاب ←</button>
-  </section>
+    <div class="server-arrow">‹</div>
+  </button>
+</section>
 
-  <nav class="bottom-nav">
-    <button class="nav-item active" data-page="home">
-      <span>⌂</span><span>خانه</span>
-    </button>
-    <button class="nav-item" data-page="servers">
-      <span>◎</span><span>سرورها</span>
-    </button>
-    <button class="nav-item" data-page="config">
-      <span>＋</span><span>کانفیگ من</span>
-    </button>
-  </nav>
-</main>
+<section class="tools">
+  <button class="tool-button" id="import-config-btn" type="button">
+    ＋ واردکردن کانفیگ
+  </button>
+  <button class="tool-button" id="activate-subscription-btn" type="button">
+    ◈ فعال‌سازی اشتراک
+  </button>
+</section>
 
-<div class="notice" id="notice" role="status"></div>
+<nav class="bottom-nav" aria-label="منوی اصلی">
+  <button class="nav-button active" id="nav-home" type="button">
+    <b>⌂</b>
+    خانه
+  </button>
+  <button class="nav-button" id="nav-servers" type="button">
+    <b>◈</b>
+    سرورها
+  </button>
+  <button class="nav-button" id="nav-settings" type="button">
+    <b>⚙</b>
+    تنظیمات
+  </button>
+</nav>
 
-<script>
-(() => {
-  const $ = id => document.getElementById(id);
+  </main>  <div class="overlay" id="server-overlay" aria-hidden="true">
+    <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+      <div class="sheet-head">
+        <h2 id="sheet-title">انتخاب سرور</h2>
+        <button class="close-button" id="close-server-sheet" type="button" aria-label="بستن">×</button>
+      </div>
+      <div id="server-options"></div>
+      <p class="sheet-note">
+        سرورهایی که هنوز آدرس و تنظیمات معتبر ندارند، قابل انتخاب نیستند.
+        این نسخه هنوز اتصال VPN برقرار نمی‌کند.
+      </p>
+    </section>
+  </div>  <script src="./config.js"></script>  <script src="./servers.js"></script>  <script src="./app.js"></script>  <script>
+    (() => {
+      const $ = id => document.getElementById(id);
+      let selectedServer = null;
 
-  const orbit = $("orbit");
-  const connectButton = $("connectButton");
-  const connectLabel = $("connectLabel");
-  const statusTitle = $("statusTitle");
-  const statusDescription = $("statusDescription");
-  const notice = $("notice");
+      function showToast(message) {
+        if (window.VEXON_APP) {
+          window.VEXON_APP.notify(message);
+          return;
+        }
 
-  let state = "disconnected";
-  let startedAt = 0;
-  let timer = null;
-  let noticeTimer = null;
+        alert(message);
+      }
 
-  function showNotice(message) {
-    notice.textContent = message;
-    notice.classList.add("show");
-    clearTimeout(noticeTimer);
-    noticeTimer = setTimeout(() => notice.classList.remove("show"), 2600);
-  }
+      function readServers() {
+        if (window.VEXON_SERVERS &&
+            typeof window.VEXON_SERVERS.getServers === "function") {
+          return window.VEXON_SERVERS.getServers();
+        }
 
-  function setState(next) {
-    state = next;
-    orbit.classList.remove("connecting", "connected");
+        if (typeof window.getServers === "function") {
+          return window.getServers();
+        }
 
-    if (next === "connecting") {
-      orbit.classList.add("connecting");
-      statusTitle.textContent = "در حال اتصال";
-      statusDescription.textContent = "در حال بررسی اتصال...";
-      connectLabel.textContent = "CONNECTING";
-    } else if (next === "connected") {
-      orbit.classList.add("connected");
-      statusTitle.textContent = "متصل";
-      statusDescription.textContent = "وضعیت واقعی سرور هنوز تأیید نشده است";
-      connectLabel.textContent = "CONNECTED";
-    } else {
-      statusTitle.textContent = "آماده اتصال";
-      statusDescription.textContent = "برای اتصال واقعی، ابتدا کانفیگ اضافه کنید";
-      connectLabel.textContent = "CONNECT";
-      $("duration").textContent = "00:00:00";
-    }
-  }
+        return [];
+      }
 
-  connectButton.addEventListener("click", () => {
-    if (state === "connecting") {
-      clearTimeout(timer);
-      setState("disconnected");
-      showNotice("عملیات نمایشی لغو شد");
-      return;
-    }
+      function getServerId(server) {
+        return server.id || server.serverId || "";
+      }
 
-    if (state === "connected") {
-      setState("disconnected");
-      clearInterval(timer);
-      showNotice("این نمونه فقط رابط کاربری است؛ VPN قطع نشده است");
-      return;
-    }
+      function getServerName(server) {
+        return server.name || server.label || getServerId(server);
+      }
 
-    setState("connecting");
-    showNotice("اتصال واقعی هنوز پیاده‌سازی نشده است");
+      function isServerReady(server) {
+        return server.enabled === true &&
+          Boolean(server.address || server.host) &&
+          server.status !== "unconfigured";
+      }
 
-    timer = setTimeout(() => {
-      setState("disconnected");
-      showNotice("برای اتصال، اپلیکیشن بومی و سرور VPN لازم است");
-    }, 1800);
-  });
+      function refreshServerList() {
+        const servers = readServers();
+        const readyServers = servers.filter(isServerReady);
 
-  $("chooseServer").addEventListener("click", () => {
-    showNotice("انتخاب سرور پس از اتصال به زیرساخت فعال می‌شود");
-  });
+        $("server-count").textContent =
+          readyServers.length.toLocaleString("fa-IR") + " سرور آماده";
 
-  $("settings").addEventListener("click", () => {
-    showNotice("تنظیمات در مرحله بعد اضافه می‌شود");
-  });
+        const list = $("server-options");
+        list.replaceChildren();
 
-  document.querySelectorAll(".nav-item").forEach(button => {
-    button.addEventListener("click", () => {
-      const page = button.dataset.page;
+        if (servers.length === 0) {
+          const message = document.createElement("p");
+          message.className = "sheet-note";
+          message.textContent = "فهرست سرورها بارگذاری نشد.";
+          list.appendChild(message);
+          return;
+        }
 
-      document.querySelectorAll(".nav-item").forEach(item => {
-        item.classList.toggle("active", item === button);
+        servers.forEach(server => {
+          const ready = isServerReady(server);
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "server-option";
+          button.disabled = !ready;
+
+          const info = document.createElement("span");
+          const title = document.createElement("strong");
+          const detail = document.createElement("small");
+
+          title.textContent = getServerName(server);
+          detail.textContent = ready
+            ? "آماده پیکربندی اتصال"
+            : "هنوز پیکربندی نشده";
+
+          info.append(title, detail);
+
+          const status = document.createElement("span");
+          status.textContent = ready ? "آماده" : "غیرفعال";
+          status.style.color = ready ? "#28D99A" : "#8E9BB2";
+
+          button.append(info, status);
+
+          button.addEventListener("click", () => {
+            selectedServer = server;
+
+            $("selected-server-name").textContent = getServerName(server);
+            $("selected-server-detail").textContent =
+              server.protocol
+                ? "پروتکل: " + server.protocol
+                : "سرور انتخاب شد";
+
+            if (window.VEXON_APP) {
+              window.VEXON_APP.selectServer(
+                getServerId(server),
+                getServerName(server)
+              );
+            }
+
+            closeServerSheet();
+          });
+
+          list.appendChild(button);
+        });
+      }
+
+      function openServerSheet() {
+        refreshServerList();
+        $("server-overlay").classList.add("open");
+        $("server-overlay").setAttribute("aria-hidden", "false");
+      }
+
+      function closeServerSheet() {
+        $("server-overlay").classList.remove("open");
+        $("server-overlay").setAttribute("aria-hidden", "true");
+      }
+
+      $("connect-btn").addEventListener("click", () => {
+        $("connect-area").classList.remove("jump");
+        void $("connect-area").offsetWidth;
+        $("connect-area").classList.add("jump");
+
+        if (!selectedServer) {
+          showToast("ابتدا یک سرور پیکربندی‌شده انتخاب کن.");
+          openServerSheet();
+          return;
+        }
+
+        showToast(
+          "سرور انتخاب شده، اما اتصال واقعی VPN هنوز پیاده‌سازی نشده است."
+        );
       });
 
-      if (page === "home") {
-        showNotice("صفحه اصلی");
-      } else if (page === "servers") {
-        showNotice("فهرست سرورها پس از راه‌اندازی سرور مدیریت اضافه می‌شود");
-      } else {
-        showNotice("افزودن کانفیگ پس از پیاده‌سازی هسته VPN فعال می‌شود");
+      $("choose-server-btn").addEventListener("click", openServerSheet);
+      $("nav-servers").addEventListener("click", openServerSheet);
+      $("close-server-sheet").addEventListener("click", closeServerSheet);
+
+      $("server-overlay").addEventListener("click", event => {
+        if (event.target === $("server-overlay")) closeServerSheet();
+      });
+
+      $("nav-home").addEventListener("click", () => {
+        document.querySelectorAll(".nav-button")
+          .forEach(button => button.classList.remove("active"));
+        $("nav-home").classList.add("active");
+      });
+
+      $("nav-servers").addEventListener("click", () => {
+        document.querySelectorAll(".nav-button")
+          .forEach(button => button.classList.remove("active"));
+        $("nav-servers").classList.add("active");
+      });
+
+      $("nav-settings").addEventListener("click", () => {
+        document.querySelectorAll(".nav-button")
+          .forEach(button => button.classList.remove("active"));
+        $("nav-settings").classList.add("active");
+        showToast("تنظیمات پیشرفته هنوز به بخش اصلی متصل نشده است.");
+      });
+
+      const config = window.VEXON_CONFIG;
+      if (config && config.app) {
+        $("version").textContent = "نسخه " + config.app.version;
+        document.title = config.app.name;
       }
-    });
-  });
-})();
-</script>
-</body>
+
+      refreshServerList();
+    })();
+  </script></body>
   </html>
