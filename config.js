@@ -1,16 +1,15 @@
+"use strict";
+
 /*
 
 * VEXON VPN
-* Central application configuration
-* 
-* این فایل فقط تنظیمات رابط کاربری را نگه می‌دارد.
-* هنوز به سرور واقعی VPN یا سیستم اشتراک متصل نیست.
+* تنظیمات اصلی برنامه
   */
 
 const VEXON_CONFIG = Object.freeze({
 app: {
 name: "VEXON VPN",
-version: "0.1.0",
+version: "0.2.0",
 language: "fa",
 direction: "rtl"
 },
@@ -36,16 +35,32 @@ connectionTimeoutMs: 15000
 security: {
 requireServerVerification: true,
 allowUnverifiedConfigs: false,
-neverStoreSubscriptionCodesInBrowser: true
+neverStoreSubscriptionCodesInBrowser: true,
+neverLogConfigCredentials: true
 },
 
 features: {
 serverSelection: true,
 importConfigFromText: true,
 importConfigFromFile: true,
-importConfigFromQR: true,
+importConfigFromQR: false,
 subscriptionActivation: false,
 realVpnConnection: false
+},
+
+configImport: {
+allowedProtocols: [
+"vless",
+"vmess",
+"trojan",
+"ss"
+],
+maxFileSizeBytes: 1024 * 1024,
+supportedFileExtensions: [
+".txt",
+".conf",
+".json"
+]
 }
 });
 
